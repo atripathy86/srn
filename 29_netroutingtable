@@ -1,0 +1,39 @@
+Printing routing table of router node:0
+Node id : Row i : Description tag : List of Node id - node_type that are attached.....
+Node :0: Row 0 : Tag 0 id 3 - type 2 , id 3 - type 2 ,
+Node :0: Row 1 : Tag 1 id 1 - type 2 , id 3 - type 2 , id 7 - type 1 , id 3 - type 2 , id 1 - type 2 , id 7 - type 1 ,
+Node :0: Row 2 : Tag 3 id 1 - type 2 , id 1 - type 2 ,
+Node :0: Row 3 : Tag 4 id 2 - type 2 , id 3 - type 2 , id 5 - type 1 , id 6 - type 1 , id 3 - type 2 , id 2 - type 2 ,
+Node :0: Row 4 : Tag 5 id 2 - type 2 , id 2 - type 2 ,
+Node :0: Row 5 : Tag 6 id 1 - type 2 , id 3 - type 2 , id 3 - type 2 , id 1 - type 2 ,
+Node :0: Row 6 : Tag 7 id 1 - type 2 , id 2 - type 2 , id 3 - type 2 , id 3 - type 2 , id 1 - type 2 , id 2 - type 2 ,
+Node :0: Row 7 : Tag 8 id 4 - type 1 ,
+Printing routing table of router node:1
+Node id : Row i : Description tag : List of Node id - node_type that are attached.....
+Node :1: Row 0 : Tag 0 id 3 - type 2 , id 0 - type 2 , id 0 - type 2 , id 3 - type 2 ,
+Node :1: Row 1 : Tag 1 id 3 - type 2 , id 7 - type 1 , id 0 - type 2 , id 0 - type 2 , id 3 - type 2 , id 7 - type 1 ,
+Node :1: Row 2 : Tag 4 id 2 - type 2 , id 3 - type 2 , id 5 - type 1 , id 6 - type 1 , id 3 - type 2 , id 2 - type 2 ,
+Node :1: Row 3 : Tag 5 id 2 - type 2 , id 0 - type 2 , id 0 - type 2 , id 2 - type 2 ,
+Node :1: Row 4 : Tag 6 id 3 - type 2 , id 3 - type 2 ,
+Node :1: Row 5 : Tag 7 id 2 - type 2 , id 3 - type 2 , id 0 - type 2 , id 0 - type 2 , id 3 - type 2 , id 2 - type 2 ,
+Node :1: Row 6 : Tag 8 id 4 - type 1 ,
+Printing routing table of router node:2
+Node id : Row i : Description tag : List of Node id - node_type that are attached.....
+Node :2: Row 0 : Tag 0 id 3 - type 2 , id 0 - type 2 , id 3 - type 2 , id 0 - type 2 ,
+Node :2: Row 1 : Tag 1 id 3 - type 2 , id 7 - type 1 , id 0 - type 2 , id 1 - type 2 , id 3 - type 2 , id 0 - type 2 , id 1 - type 2 ,
+Node :2: Row 2 : Tag 3 id 1 - type 2 , id 1 - type 2 ,
+Node :2: Row 3 : Tag 4 id 3 - type 2 , id 5 - type 1 , id 6 - type 1 , id 3 - type 2 , id 5 - type 1 , id 6 - type 1 ,
+Node :2: Row 4 : Tag 5 id 0 - type 2 , id 0 - type 2 ,
+Node :2: Row 5 : Tag 6 id 3 - type 2 , id 1 - type 2 , id 3 - type 2 , id 1 - type 2 ,
+Node :2: Row 6 : Tag 7 id 3 - type 2 , id 0 - type 2 , id 1 - type 2 , id 3 - type 2 , id 0 - type 2 , id 1 - type 2 ,
+Node :2: Row 7 : Tag 8 id 4 - type 1 ,
+Printing routing table of router node:3
+Node id : Row i : Description tag : List of Node id - node_type that are attached.....
+Node :3: Row 0 : Tag 0 id 0 - type 2 , id 0 - type 2 ,
+Node :3: Row 1 : Tag 1 id 7 - type 1 , id 0 - type 2 , id 1 - type 2 , id 0 - type 2 , id 1 - type 2 , id 7 - type 1 ,
+Node :3: Row 2 : Tag 3 id 1 - type 2 , id 1 - type 2 ,
+Node :3: Row 3 : Tag 4 id 5 - type 1 , id 6 - type 1 , id 2 - type 2 , id 2 - type 2 , id 5 - type 1 , id 6 - type 1 ,
+Node :3: Row 4 : Tag 5 id 0 - type 2 , id 2 - type 2 , id 0 - type 2 , id 2 - type 2 ,
+Node :3: Row 5 : Tag 6 id 1 - type 2 , id 1 - type 2 ,
+Node :3: Row 6 : Tag 7 id 0 - type 2 , id 1 - type 2 , id 2 - type 2 , id 0 - type 2 , id 1 - type 2 , id 2 - type 2 ,
+Node :3: Row 7 : Tag 8 id 4 - type 1 ,

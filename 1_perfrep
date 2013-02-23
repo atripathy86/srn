@@ -1,0 +1,121 @@
+***Database Report at time 1  ticks *** 
+
+ The following figures are for the message packets, not unique user level queries 
+
+Queries_sent_from_ResourceNode : 40 
+Queries_sent_from_RouterNode : 858 
+
+Queries_forwarded_by_RouterNode_orgininated_from_ResourceNode : 70 
+Queries_forwarded_by_RouterNode_orgininated_from_RouterNode : 2184 
+
+Responses_sent_from_ResourceNode : 4 
+Responses_sent_from_RouterNode : 78 
+
+Num_of_good_responses : 0   # These are the response received from router nodes only, as resources/ routers are interested to identify router to whom they can attach to 
+
+Num_duplicate_message_dropped : 0 
+Num_looping_message_dropped : 0 
+Num_queries_dropped_for_TTL  : 0 
+
+Num_total_message_generated (due to internal network ops - query, forwarding, response) : 3234 
+
+Queries_sent_from_UserNode  (query packets) : 0
+Num_responses_sent_for_UserNode : 0
+Num_of_good_responses_for_UserNode : 0
+Num_duplicate_message_dropped_for_UserNode : 0
+Num_looping_message_dropped_for_UserNode : 0
+Num_queries_dropped_for_TTL_for_UserNode  : 0
+Num_responses_dropped_for_TTL_for_UserNode : 0
+
+Num_total_message_generated_for_UserNode (query, forwarding, response) : 0 
+
+Num_total_queries_generated (rtr, res, user): 898  # This is total of all resource, router, user nodes
+Num_total_responses_generated (rtr, res, user): 82  # This is total of all resource, router, user nodes 
+
+Analysis of Query-Response statistics across all tags for internal network operations (advertising operations only) :
+Contents of num_resource_with_specific_tag 
+Tag : res: rtr: queries: good responses from routers
+   0:   1:   1:      44:    0 
+   1:   0:   5:      61:    0 
+   2:   2:   2:      28:    0 
+   3:   0:   5:      51:    0 
+   4:   3:   5:      67:    0 
+   5:   0:   3:      58:    0 
+   6:   0:   7:      54:    0 
+   7:   0:   7:      69:    0 
+   8:   0:   4:      35:    0 
+   9:   0:   6:      32:    0 
+  10:   1:   2:      16:    0 
+  11:   0:   6:      33:    0 
+  12:   1:   6:      22:    0 
+  14:   0:   1:       6:    0 
+  15:   0:   2:       8:    0 
+  16:   0:   6:      24:    0 
+  17:   0:   5:      16:    0 
+  18:   0:   6:      24:    0 
+  19:   0:   6:      18:    0 
+  20:   1:   4:      14:    0 
+  21:   1:   1:       4:    0 
+  22:   1:   3:      11:    0 
+  23:   2:   3:      11:    0 
+  24:   0:   3:      12:    0 
+  25:   2:   4:      16:    0 
+  26:   0:   4:       8:    0 
+  27:   0:   3:       9:    0 
+  28:   0:   2:       6:    0 
+  29:   0:   4:      12:    0 
+  30:   1:   3:      11:    0 
+  31:   0:   2:       6:    0 
+  32:   0:   1:       3:    0 
+  33:   0:   6:      16:    0 
+  34:   1:   5:      17:    0 
+  35:   0:   7:      19:    0 
+  36:   0:   5:      18:    0 
+  37:   3:   3:      15:    0 
+  38:   0:   1:       6:    0 
+  39:   0:   1:       6:    0 
+
+Values for recall rate calculation for network internal operation (advertising operations only) 
+sum_num_good_responses = 0 , sum_num_resources = 146 , sum_num_queries = 865 , RouterNode_k = 3 
+Recall rate per query for internal network operations = 0.0000 
+
+Analysis of Query-Response time response for network's  internal operation: Contents of hops_before_response_ctr 
+Parameters used to generate the histogram : DatabaseHistResolution : 1, DatabaseMaxHops : 100 ,num_buckets : 8 
+Histogram contents - 
+Hops :Freq 
+    1:   82
+
+Analysis of duplicate packet's longevity (hops before they were identified as dup packets and dropped) 
+for network's  internal operation: Contents of longevity_of_message_ctr_for_TTL
+Parameters used to generate the histogram : DatabaseHistResolution : 1 , DatabaseMaxHops : 100 , num_buckets : 8 
+Histogram contents - 
+Hops :Freq 
+
+Analysis of Query-Response time response for user queries: Contents of hops_before_response_ctr_for_UserNode 
+Parameters used to generate the histogram : DatabaseHistResolution_for_UserNode : 1 , DatabaseMaxHops_for_UserNode : 100 , num_buckets_for_UserNode : 8 
+Histogram contents - 
+Hops :Freq 
+
+Analysis of duplicate packet's longevity (hops before they were identified as dup packets and dropped) 
+for user queries: Contents of hops_before_response_ctr_for_UserNode 
+Parameters used to generate the histogram : 
+DatabaseHistResolution_for_UserNode : 1, DatabaseMaxHops_for_UserNode : 100, num_buckets_for_UserNode : 8
+Histogram contents - 
+Hops :Freq 
+
+Analysis of Query-Response statistics for user queries across all tags for which a resource exists :
+Contents of Num_of_good_responses_for_specific_tag_for_UserNode 
+Tag  : res : queries: responses 
+
+Values for recall rate calculation for user queries 
+sum_num_good_responses = 0 , sum_num_resources = 0, sum_num_queries = 0, RouterNode_k= 3 
+Recall rate per query for external queries not yet available 
+
+Analysis of Query-Response statistics across all tags for user queries :
+Contents of Num_of_good_responses_for_specific_tag_for_UserNode
+Tag  : res : queries: responses 
+
+Values for hit/success rate calculation for user queries 
+sum_num_good_responses = 0 , sum_num_queries = 0 
+Hit rate per query for external queries not yet available 
+

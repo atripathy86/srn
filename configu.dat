@@ -1,0 +1,70 @@
+snapshot_reporter_period 50
+snapshot_reporter_start_time 1
+oneshot_reporter_time 0
+
+run_for_ticks 50 
+bootstrap_threashold 4 
+message_time_to_live 2 
+query_time_to_live 10 
+
+
+ResourceNode_vitality 10 
+ResourceNode_extroversion 1
+ResourceNode_delay 5
+ResourceNode_response_timeout  50
+ResourceNode_max_description 1
+
+RouterNode_vitality 10 
+RouterNode_extroversion 1 
+RouterNode_delay 5
+RouterNode_response_timeout 50
+RouterNode_num_queries_to_submit_per_period 5
+RouterNode_k 3 
+RouterNode_duplicate_message_cache_timeout 50
+RouterNode_max_description 9
+RouterNode_routing_table_capacity 1000 
+RouterNode_max_router_out_interfaces 1000
+
+UserNode_vitality 10 
+UserNode_extroversion 3
+UserNode_response_timeout  50
+UserNode_num_queries_to_submit_per_period 5
+
+
+Birth_ResourceNode_start_time 0 
+Birth_ResourceNode_period 10 
+Birth_ResourceNode_total_num_cycles 100
+Birth_ResourceNode_num_cycles_per_heartbeat 5
+
+Birth_RouterNode_start_time 0 
+Birth_RouterNode_period 10 
+Birth_RouterNode_total_num_cycles 100 
+Birth_RouterNode_num_cycles_per_heartbeat 5
+
+Birth_UserNode_start_time 20
+Birth_UserNode_period 20 
+
+num_words 100 
+degree_of_associativity_of_words 4
+sw_model_probability 0.02
+
+input_onto_file_name ontoin
+output_onto_file_name ontoout.net
+output_onto_report_file_name ontorep
+output_network_file_name netout.net
+structural_report_file_name netstrucrep 
+generation_performance_report_file_name perfrep
+operation_performance_report_file_name oprnetperfrep
+routing_table_content_report_file_name netroutingtable
+
+DatabaseHistResolution 1
+DatabaseMaxHops 100
+DatabaseHistResolution_for_UserNode 1
+DatabaseMaxHops_for_UserNode 100
+
+trace_source_node_id 4294967292
+trace_destination_node_id 4
+trace_tag 15
+
+
+

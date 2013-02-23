@@ -1,0 +1,389 @@
+ Notes for ver 1.31
+Time - Nov 27, 8.09AM         
+What this code contains
+
+1)  The routing table report now contains the res num for each row, it will help troouble shoot protocol deficiencies
+
+
+//1) Dynamic translation in the res nodes have been added so now matching is done within the translation radius. 
+
+
+earlier Notes for ver 1.31
+Time - Nov 26, 10.32PM         
+What this code contains
+
+1) For all the dynamic array mem allocation, the memset ranges are matched with allocation lengths, just in case that doesnt corrupt memory 
+	or give false readings in the counters due to preexisting junk values.
+
+
+
+earlier Notes for ver 1.30
+Time - Nov 26, 8.54PM         
+What this code contains
+
+1) There is no point in generating useless pajek file if edge list in not extracted (see pt 1 in ver 1.30), so deactivated in the IO reporter heartbeat
+
+2) The description to query matching should not be absolutely strict (to allow vocub translation), there should be some radius in the semantic space to match 
+	to the query). this radius is now implemented in the  
+
+earlier Notes for ver 1.30
+Time - Nov 26, 20.54PM         
+What this code contains
+
+1) Deactivting the extraction of edge list and distance generation process. These are things which is deemed to hog memory
+a) In simulation.cpp provisioned the edge list capacity to 2, if these are not required then the provisioned (2 units) memory is memset to 0
+b) The calling of generate distance matrix is made conditional to network_struct_report_required (this should be turned to 0 in the config file)
+c) extract_edge_list() is called how ever writing the edge_list and weight arrays are deactivated if config files tells to do so. 
+d) The diameter and num_edges in Analyst are set to 0 in the Ananlyst constructor, so that they become harmless (even some junk may be there after allocation), 
+	so that no loop can start which are suppose to iterate in this range to write the network list etc. 
+e) Also made changes in write structural report, now only the histograms are written always and rest adjacency matrix 
+	and parent etc are written whenever required.
+f) Made chages in the Analyst destructers and introduced a new int to store whether struc rep is required or not, 
+	all distances and parent datastructures are now cleaned up if they were used in the first place ! otherwise
+	they will throw seg fault !
+
+2) Fixed a possible mem corruption bug, the memset for distance_histogram was not doing memset for enough range.
+
+
+earlier Notes for ver 1.29
+Time - Nov 26,  4.11PM       
+What this code contains
+
+1) The error message (2 of them,) when responses are dropped, are removed.
+2) Instead of the error message, a counter is added.
+
+
+
+earlier Notes for ver 1.28
+Time - Nov 26,  3.04PM      
+What this code contains
+
+1) The commented traces for troubleshooting removed
+2) Changing the Destinations from multiset to set, with stricter ordering based on id when the relevances are identical 
+	(this will catch is the inserted node is identical or not), along with this we need to also change the res node incrementing,
+	if the res node is already present in the destination, then it the res node counter in the row should not be incremented, at all.
+
+
+
+
+earlier Notes for ver 1.27
+Time - Nov 26,    2.12PM   
+What this code contains
+
+1) The checking of the memory allocation in simulation (for Ananlyst) and SmallWorld generator is fixed with proper ranges for the array declarations.
+2) The RTindex is modified to be mutiset instead of set, as that caused the seg fault bug by overflowing the histogram arrays,
+3) The list of edges and weight are reduced in terms of memory, earlier they are overprovisioned.
+4) The trimming of RT length is fixed
+5) The trimming of RT width is fixed - the res num was not decrmenting properly - was decrementing for all trimming, 
+	now it is decremented for only res node erasing
+6) The node_type is passed from proxy birth agent, so that they send right type when attaching during bootstraping, 
+	so that res num accounting is done properly
+7) The destination list has a problem, duplicate res nodes are being allowed, this can be fixed by making the comparing much more stricter 
+	and then using set inctead of multiset.
+8) There is difference between build with traces and without traces - need to see if any essential statement went inside the debug conditional compilation.
+  earlier there used to be seg fault at Tick 0 when build without traces.
+
+
+earlier Notes for ver 1.26
+Time - Nov 25, 12.31 PM     
+What this code contains
+
+1) The explorations is not done if the routing table size threashold point is reached. Seems this improves the internal recall rate, 
+reduce the network operations traffic significantly.
+
+2) extract_edge_list is deactivated, this solved the seg fault in the middle and also at the end.
+
+
+earlier Notes for ver 1.25
+Time - Nov 25, 5.42 AM     
+What this code contains
+
+1) Fixed the memsets in Database and Ananlyst to their correct sizes.
+
+2) Reporter execution still has problems 2 - seg fault at the end for weight deletion, the segfault in middle just after a reporter action
+
+3) Changed the printf in case there is memory underprovisioning
+
+
+
+earlier Notes for ver 1.25
+Time - Nov 25, 5.42 AM     
+What this code contains
+
+1) Fixed the seg fault at the end of progr run, it was because the event_itrs were not incremented in the destrcutor of the sched
+
+2) There are still problems -another seg fault at the end - Ananlyst's weight and edge list deletion throws fault, 
+specially weight, seems these are getting corrupted
+
+earlier Notes for ver 1.24
+Time - Nov 25, 4.03 AM     
+What this code contains
+
+1) Added the deleting of the event in the cancel periodic, after erase
+
+2) Used another pointer to keep reference to the event to delete in the execute event schedule. The deleting of the event 
+is carried after the erase, this was required to allow the multiset data structure to find the element to erase.
+
+3) Modified incrementing of the num res counter for the row object
+
+4) If the word graph edge list array is not provisioned as n *2 * degree then it would give seg fault, this is fixed
+
+
+Notes for ver 1.23
+Time - Nov 24,   7.53PM  
+What this code contains
+
+1) The scheduler methods are now changed, they will take event pointer instead of the event object, 
+that way we can save memory copies during function call.
+This is important for performance as these methods are in critical path.
+
+2) When configbig.dat is used, the program goes haywire after , config1.dat gives seg fault, use this file to troubleshoot, 
+this problem starts happening when num of nodes goes beyond 50,50. seems something to do with memory provisioning somewhere
+
+3a)reduced the memory provisioning for list of edges and weights for the main network, multiplied by the length and width of 
+the routing table instead of num of nodes -1, lets see if there is any problems.
+
+3b) Also reduced the memory provisioning for list of edges and weights for the ontology graph. 
+It is now increased to care of the larger degree of associativity of words, but this didnt solve the problem (pt 2, ver 1.22)
+
+
+
+
+earlier Release Notes for ver 1.22
+Time - Nov 24,   7.24PM  
+What this code contains
+
+1) The Scheduler is overhauled, instead of our own List, we are now using multiset for the schedules.
+That made it easier for sorting (automatic by the multiset insert) and insertion.
+
+2) Observed a problem from ver 1.21 (atleast, may be also ver 1.19 also) onwards - seg fault coming at the return path of the main.
+With this issue we may still get outputs, but scalability is not reliable, because suspect that it is due to some memory corruption due to 
+itr overflowing.
+
+Release Notes for ver 1.21 (yet to be fully test)
+Time - Nov 23,     10.42PM 
+What this code contains
+
+1) The recall rate calculation is fixed for the internal queries and external user queries, recall rate = sum of responses / sum of ( queries * nodes present)
+
+
+earlier Release Notes for ver 1.20 (yet to be fully test)
+Time - Nov 23,  7.25PM   
+What this code contains
+
+1) The message key bug is fixed (the size of the for loop was not correct, though it didnt give and faults)
+the fi index was reduced after every erase
+
+2) The instead of begining the search of the second key from the very beginning, the itr was incremented properly ,
+so that search can start from the next element. this reduced the complexity of the set search.
+
+
+earlier Release Notes for ver 1.19 (yet to fully test)
+Time - Nov 23,  5.45PM   
+What this code contains
+
+1) pt 4a of earlier ver 1.19 is rectified, the knowledge vector is removed by remove-erase STL algorithm (which are demmed to be optimized) 
+
+
+
+earlier Release Notes for ver 1.19 (still running in testbench)
+Time - Nov 23,    12.40PM
+What this code contains
+
+1) Trimming methods activated, changes made to quite some places to deploy, like the indexes are updated, 
+res counters for each row is incremented
+
+2) The specific row width trim method is changed suitably to accomodate the feature that maintains min number 
+of res node destinations. This is important because other wise the network will over fit to routers only.
+
+3) The tag for which routing table rows are removed, is also removed from knowledge.
+
+4) There are several performance problems -
+a) The searching and deletion from knowledge vector is expensive (linear search)
+b) The searching and deletion from destinitions multiset is expensive (linear search)
+
+
+earlier Release Notes for ver 1.18
+Time - Nov 22, 4.11PM   
+What this code contains
+
+1) Trimming methods not activated, but Destination data structure is now ordered, based on the releavance to the router's description, 
+so that means order in which queries will be forwarded will change from the unordered version (ver 1.17 and below).
+
+earlier Release Notes for ver 1.17
+Time - Nov 22,  11.25AM   
+What this code contains
+
+1) The data structures and methods for trimming are mearged with the main code. But trimming not deployed as yet.
+
+earlier Release Notes for ver 1.16
+Time - Nov 21, 8.43PM    
+What this code contains
+
+1) The 9 trimming parameters for routing table length, width, known routers list are passed to the node classes.
+
+
+
+earlier Release Notes for ver 1.15
+Time - Nov 19,   7.33PM  
+What this code contains
+
+1) The routing table row structure is changed - couunter is added, row obj are not accessed thru pointers, no nested containers
+
+
+earlier Release Notes for ver 1.14
+Time - Nov 16,   5.22PM  
+What this code contains
+
+1)  The routing table and row obj definition is consolidated in one place (Node.hpp) to ease the routing table transitions
+
+
+earlier Release Notes for ver 1.13
+Time - Nov 16,   12.44PM noon
+What this code contains
+
+1)  OntologyRepository services mearged with RouterNode
+
+earlier Release Notes for ver 1.12
+Time - Nov 16,  10.34AM
+What this code contains
+
+1)  Listener optimized also 
+
+
+earlier Release Notes for ver 1.11
+Time - Nov 16,  2.53AM
+What this code contains
+
+1)  Optimized all while loops in other remaining files to for loops (except Listner). 
+
+
+
+earlier Release Notes for ver 1.10
+Time - Nov 16,  1.55AM
+What this code contains
+
+1)  Optimized all while loops in Node.cpp to for loops. 
+2) Changed all unsigned int to int, which are likely to be small
+
+
+earlier Release Notes for ver 1.09
+Time - Nov 14, 8.29 AM
+What this code contains
+
+1)  Optimized the nearest_k iterating for loop, so that less function call on nearest_k is made. 
+
+
+
+
+earlier Release Notes for ver 1.08
+Time - Nov 13, 11 AM
+What this code contains
+
+1)  Fixed the bug that was corrupting routing table of node 9, 12, 19
+the nearest_k_itr was overflowing, without check on nearest_k.end(), this because sometimes
+this list will contain less than k items
+
+earlier Release Notes for ver 1.07
+Time - Nov 12, 6.47PM
+What this code contains
+
+1)  The following was added after removing older names and values-
+			RouterNode_routing_table_max_length = 8;
+			RouterNode_routing_table_max_width = 8;
+
+2) Following routing table histogram counter arrays were added-
+	unsigned int *routing_table_length_histogram;
+	unsigned int *routing_table_width_histogram;
+	unsigned int *routing_table_max_width_histogram;
+
+3) A bug left out in the routing table printing - it prints a junk tag for some nodes at the end.
+
+
+earlier Release Notes for ver 1.06
+Time - Nov 12,  11.50AM
+What this code contains
+
+1) Added performance counter to count packet dropped for looping
+2)Changed -DDUPACK_LIST to -DDETECT_LOOP
+
+
+earlier Release Notes for ver 1.05
+Time - Nov 12, 10.54AM  
+What this code contains
+
+1) Added structure for validation of config data, time to live parameters are validated
+
+2) nodes visited list is copied to response , so that source node can infer from it, 
+upon receiving a response
+
+
+earlier Release Notes for ver 1.04
+Time - Nov 11, 6.37PM 
+What this code contains
+
+1) Fixed the pajek IO writing format
+
+2) Fixed the bug in exploration - the centroid budget, scanning and semantic radius now smoothly increments
+
+3) Fixed new bug introduced in IO_Reporter::write_performance_report(), during fprintf conversion
+
+
+earlier Release Notes for ver 1.03
+Time - Nov 11, 2PM 
+What this code contains
+
+
+1) Mearged IO_Reporter fprintf stuff done by Suneil
+
+
+earlier Release Notes for ver 1.02
+Time - Nov 11, 11.04AM 
+What this code contains
+
+1) moved the update_description_to_explore() & seek_new_resources_to_update_routing_table() in the routernode heartbeat. 
+This is in preparation for this following feature - Router nodes updates its description to explore in each heartbeat, 
+earlier it only explored the description that was inititalized at birth time. However the feature is not added at this 
+time, only preparation is done.
+
+2) Fixed RouterNode_num_exploration_queries_to_submit_per_period to type int in Input.hpp, it was earlier type Tick
+
+3) Ok , we are also changing for the exploration
+changed - RouterNode::update_descriptions_to_explore() & RouterNode::seek_new_resources_to_update_routing_table()
+
+4) Changed all node parameters from int to unsigned int
+
+5) The advertising and exploring schemes are fixed in this way - the advertising scheme for rtr node always advertises 
+itself to both rtr and res node (the res nodes only advertises to rtr nodes), and the exploration is done for tags which 
+are away from centroid tags (description), but doesnt include the centroid tags (becoz the advertising takes care of that.
+The description to explore is preloaded with centroid tags to filter away tags which are centroid tags (so that 
+temp_description to explore doesnt ever inserts centroid tags), this avoids duplicate query sending (even with different
+seq num). This minimizes message traffic.
+
+6) The exploration doesn't fully work yet - need to ensure that while next batch of centroid topics are explored, the 
+incremental radius should hold to same value, now it is getting incremented. will fix this in next version.
+
+earlier ver 1.01 notes
+Time - Nov 10, 10.49AM
+What this code contains
+
+1) The ResourceNode::update_query_bag() now contain logic that takes care to add only those queries
+whose descriptions are new, it checks the query bag for existing query descriptions that already 
+been updated and only add those queries that are new, this will be suitable for incremental exploration
+
+
+earlier ver 1.0 notes
+Time - Nov 10, 8.52 AM
+What the code includes -
+
+1) Duplicate packets and loop prevention implemented with SET, CACHE and LIST
+however this are not properly rationalized, because duplicate and looping should both be applied together, 
+havent yet checked the code whether both can be applied or not, seems it can be but havent yet tested the 
+impact of both loop prevention and duplicate packet filtering
+
+2) reporting generation are verified, but formating not yet reader friendly, 
+except the float recall rate is not being printed with C++ file IO,
+will have to wait for Suneil to give the fprintf modifications
+
+3) All basic networking functionalities are verified
+

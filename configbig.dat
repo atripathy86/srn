@@ -1,0 +1,71 @@
+snapshot_reporter_period 46
+snapshot_reporter_start_time 1
+oneshot_reporter_time 0
+
+run_for_ticks 100 
+bootstrap_threashold 2 
+message_time_to_live 10  # For queries and responses inside the network
+query_time_to_live 10   # For user queries
+
+
+ResourceNode_vitality 20 
+ResourceNode_extroversion 3  #
+ResourceNode_delay 5
+ResourceNode_response_timeout  40  # This param should be sufficiently big to handle the delay in the network, else will kill listeners even before all response arrive, and throw "May be an error.."
+ResourceNode_max_description 1
+
+RouterNode_vitality 30 
+RouterNode_extroversion 1  # This one decides the radius from the centroid topics to explore, to get resources, a bigger value may cause better recall performance, for example value 1 doesnt recall any resource with Tag 12
+RouterNode_num_centroid_tags_to_explore_per_period 2 # This parameter limits how many centroid topics around which exploration will be done per period 
+RouterNode_num_exploration_queries_to_submit_per_period 5 # This parameter limits how many queries the router node can submit for exploration
+RouterNode_delay 5
+RouterNode_response_timeout 40  # This param should be suffciently big to handle the delay in the network, else will kill listeners even before all response arrive, and throw "May be an error.."
+RouterNode_k 3 
+RouterNode_duplicate_message_cache_timeout 10
+RouterNode_max_description 5
+RouterNode_routing_table_max_length 1024
+RouterNode_routing_table_max_width 1024
+
+UserNode_vitality 50 
+UserNode_extroversion 3  # This one decides how many routers nodes to bootstrap to
+UserNode_response_timeout  40 # This param should be sufficiently big to handle the delay in the network, else will kill listeners even before all response arrive, and throw "May be an error.."
+UserNode_num_queries_to_submit_per_period 5
+
+
+Birth_ResourceNode_start_time 0 
+Birth_ResourceNode_period 10 
+Birth_ResourceNode_total_num_cycles 20
+Birth_ResourceNode_num_cycles_per_heartbeat 20
+
+Birth_RouterNode_start_time 0 
+Birth_RouterNode_period 10 
+Birth_RouterNode_total_num_cycles 30 
+Birth_RouterNode_num_cycles_per_heartbeat 30
+
+Birth_UserNode_start_time 25
+Birth_UserNode_period 20 
+
+num_words 40 
+degree_of_associativity_of_words 4
+sw_model_probability 0.7
+
+input_onto_file_name ontoin
+output_onto_file_name ontoout.net
+output_onto_report_file_name ontorep
+output_network_file_name netout.net
+structural_report_file_name netstrucrep 
+generation_performance_report_file_name perfrep
+operation_performance_report_file_name oprnetperfrep
+routing_table_content_report_file_name netroutingtable
+
+DatabaseHistResolution 1
+DatabaseMaxHops 100
+DatabaseHistResolution_for_UserNode 1
+DatabaseMaxHops_for_UserNode 100
+
+trace_source_node_id 9
+trace_destination_node_id 12
+trace_tag 6
+
+
+
