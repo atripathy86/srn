@@ -223,7 +223,7 @@ class ResourceNode:public Node {
 	virtual void update_routing_table_action(Response *curr_response_ptr){};//=0;
 	virtual int attach_request(ResourceNode* passed_node_ptr){};//=0;Added to avoid dynamic cast
 
-	void ResourceNode::send_queries_from(std::list<Query*> &query_bag , std::list<Query*>::iterator &curr_query_bag_itr,  int num_queries_to_send );
+	void send_queries_from(std::list<Query*> &query_bag , std::list<Query*>::iterator &curr_query_bag_itr,  int num_queries_to_send );
 
 	virtual bool can_accept_message(Message &submitted_message);
 
@@ -336,7 +336,8 @@ class ResourceNode:public Node {
 			public:
 			ResourceNode *parent_ptr;
  			routing_table_rows_greater_than(ResourceNode *passed_parent_ptr):parent_ptr(passed_parent_ptr){};//parent_ptr= passed_parent_ptr;};
-			bool operator()(Tag tag1, Tag tag2) //const
+			//bool operator()(Tag tag1, Tag tag2) // STL containers require comparator to be const-invocable (C++17 static_assert)
+		bool operator()(Tag tag1, Tag tag2) const
 				{
 					return greater_than((*parent_ptr).relevance( tag1), (*parent_ptr).relevance( tag2));
 				}
@@ -353,11 +354,11 @@ class ResourceNode:public Node {
 				}
 		};
 */
-	class routing_table_cols_greater_than_strict {
+		class routing_table_cols_greater_than_strict {
 			public:
 			ResourceNode *parent_ptr;
  			routing_table_cols_greater_than_strict(ResourceNode *passed_parent_ptr):parent_ptr(passed_parent_ptr){};//{parent_ptr =passed_parent_ptr;};
-			bool operator()(ResourceNode* ResourceNode_ptr1, ResourceNode* ResourceNode_ptr2) //const
+			bool operator()(ResourceNode* ResourceNode_ptr1, ResourceNode* ResourceNode_ptr2) const //const
 				{
 					return greater_than_strict((*parent_ptr).relevance( ResourceNode_ptr1->description ), (*parent_ptr).relevance( ResourceNode_ptr2->description ),
 													ResourceNode_ptr1->id, ResourceNode_ptr2->id);
@@ -609,7 +610,7 @@ class RouterNode:public ResourceNode {
 #ifdef DEBUG_L2
 	void print_routing_table();
 	void print_nearest_k();
-	void RouterNode::print_routing_table_index();
+	void print_routing_table_index();
 	void print_destinations(Destinations &destinations);
 #endif
 
@@ -665,7 +666,7 @@ class known_routers_index_less_than {
 		public:
 		ResourceNode *parent_ptr;
 		known_routers_index_less_than (ResourceNode *passed_parent_ptr):parent_ptr(passed_parent_ptr){};//parent_ptr= passed_parent_ptr;};
-		bool operator()(KnownRouterIndexElement* element_ptr1, KnownRouterIndexElement* element_ptr2){
+		bool operator()(KnownRouterIndexElement* element_ptr1, KnownRouterIndexElement* element_ptr2) const {
 
 			switch (equal_and_greater( (*(element_ptr1->RouterNode_ptr)).relevance( (*parent_ptr).description ), (*(element_ptr2->RouterNode_ptr)).relevance( (*parent_ptr).description ) ) )
 			{

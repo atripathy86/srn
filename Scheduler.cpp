@@ -121,11 +121,18 @@ inline void Scheduler::execute_periodic_schedule(){
 		//printf("Periodic schedule execution starting....\n");
 
 			//Find the events to execute
+			// run_periodic_itr is advanced to next BEFORE calling the handler because the handler may call
+			// cancel_periodic() which erases and deletes the current element, invalidating run_periodic_itr.
+			// Saving the next iterator first keeps iteration safe even when the current element is removed.
+			//for (run_periodic_itr = periodic_schedule.begin(); // old: for-loop increment happens after handler, unsafe if handler erases current element
+			//		run_periodic_itr != periodic_schedule.end() ;
+			//		run_periodic_itr++
+			//	)
 			for (run_periodic_itr = periodic_schedule.begin();
 					run_periodic_itr != periodic_schedule.end() ;
-					run_periodic_itr++
 				)
  				{
+					std::multiset<Event*, event_less>::iterator next_periodic_itr = std::next(run_periodic_itr); // save next before potential erase by handler
 
 					if(  
 							ticks && (
@@ -141,7 +148,9 @@ inline void Scheduler::execute_periodic_schedule(){
 						(*(  (*(*run_periodic_itr)).handler   ))();
 
 					}//end if
-				
+
+					run_periodic_itr = next_periodic_itr; // advance using pre-saved iterator
+
 				}//End of running events
 
 			//printf("Periodic schedule execution over\n");

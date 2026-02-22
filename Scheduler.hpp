@@ -8,7 +8,8 @@
  
 class event_less{
 	public:
-	 bool operator()(Event * event_ptr1, Event * event_ptr2){
+	 //bool operator()(Event * event_ptr1, Event * event_ptr2){ // STL containers require comparator to be const-invocable (C++17 static_assert)
+	 bool operator()(Event * event_ptr1, Event * event_ptr2) const {
 
 		return (*event_ptr1).time < (*event_ptr2).time ;
 	 

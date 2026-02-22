@@ -31,7 +31,8 @@ class Message {
 
 	//Message();
 	//Message(unsigned int passed_id);
-	Message::Message(){
+	//Message::Message(){ // Extra qualification not allowed on inline definitions inside class body
+	Message(){
 
 			//id = passed_id;
 			source_node_id =0;
@@ -61,7 +62,8 @@ class Response:public Message {
 	public:
 	//Response();
 	//Response(unsigned int passed_id);
-	Response::Response(){type = RESPONSE;return;};
+	//Response::Response(){type = RESPONSE;return;}; // Extra qualification not allowed on inline definitions inside class body
+	Response(){type = RESPONSE;return;};
 
 };
 
@@ -70,7 +72,8 @@ class Query:public Message {
 	//int only_to_node_type;//Changed to bit flag type and pushed into base class
 	//Query();
 	//Query(unsigned int passed_id);
-	Query::Query(){type = QUERY; return;};
+	//Query::Query(){type = QUERY; return;}; // Extra qualification not allowed on inline definitions inside class body
+	Query(){type = QUERY; return;};
 
 
 };
@@ -80,7 +83,8 @@ class Feedback:public Message {
 	//int only_to_node_type;//Changed to bit flag type and pushed into base class
 	//Feedback();
 	//Feedback(unsigned int passed_id);
-	Feedback::Feedback(){type = FEEDBACK; return;};
+	//Feedback::Feedback(){type = FEEDBACK; return;}; // Extra qualification not allowed on inline definitions inside class body
+	Feedback(){type = FEEDBACK; return;};
 
 };
 
