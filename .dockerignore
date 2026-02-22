@@ -1,0 +1,17 @@
+# Compiled objects and binary — no need to send to Docker daemon
+*.o
+simulation
+
+# Generated output files
+*.net
+*_perfrep
+*_netstrucrep
+*_netroutingtable
+*_ontorep
+ontorep
+ontoout.net
+
+# Editor / OS noise
+.vscode/
+*.swp
+*~

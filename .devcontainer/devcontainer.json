@@ -1,0 +1,42 @@
+{
+  "name": "SRN Simulator",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  // Mount the workspace into the container
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/root/.claude,type=bind",
+    "source=${localEnv:HOME}/.claude.json,target=/root/.claude.json,type=bind"
+  ],
+  
+  // Useful VS Code extensions for C++ development
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.makefile-tools",
+        "anthropic.claude-code"
+      ],
+      "settings": {
+        "C_Cpp.default.compilerPath": "/usr/bin/g++",
+        "C_Cpp.default.cStandard": "c99",
+        "C_Cpp.default.cppStandard": "c++98",
+        "C_Cpp.default.includePath": [
+          "${workspaceFolder}/**",
+          "/usr/include/boost"
+        ],
+        "makefile.makePath": "make"
+      }
+    }
+  },
+
+  // Forward no ports by default; add entries here if the simulator ever gains a network UI
+  "forwardPorts": [],
+
+  "postCreateCommand": "echo 'Run: make && ./simulation config.dat'"
+}
