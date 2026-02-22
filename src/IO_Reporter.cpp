@@ -45,11 +45,26 @@ void IO_Reporter::read_input_parameter(char *passed_input_file_name, Infrastruct
 			 float float_value; unsigned int value; char temp[1000];char temp2[100];
 			 smline.clear();
 			 getline(file,smline);
-			 
-			 //std::istringstream ss(smline); 
+
+			 // Strip Windows-style \r (CRLF files on Linux leave \r at end of line)
+			 if (!smline.empty() && smline[smline.size()-1] == '\r')
+			 	smline.erase(smline.size()-1);
+			 // Truncate at '#' so inline comments don't interfere with parsing
+			 {
+			 	std::string::size_type hash_pos = smline.find('#');
+			 	if (hash_pos != std::string::npos)
+			 		smline.erase(hash_pos);
+			 }
+
+			 //std::istringstream ss(smline);
 			 ss_ptr = new istringstream(smline);
-			 (*ss_ptr)>>temp; //the first part is the variable name
-			 
+			 // Old code read temp unconditionally then fell into the if/else chain; this caused
+			 // the classic while(!eof) bug: on the extra post-EOF iteration getline returns "",
+			 // >>temp fails and leaves temp with its previous stack value, >>value yields 0,
+			 // and the last-parsed parameter gets silently overwritten with 0.
+			 // Fix: skip the if/else chain entirely if >>temp fails (empty or EOF line).
+			 if (!((*ss_ptr)>>temp)) { delete ss_ptr; continue; } // skip blank / unreadable lines
+
 			   if (strcmp(temp, "network_struct_report_required") ==0 ) { (*ss_ptr)>>value;  param_ptr->network_struct_report_required = value ;If_ptr->analyst.network_struct_report_required = value; } 
 
 					else if (strcmp(temp, "snapshot_reporter_period") ==0 ) { (*ss_ptr)>>value;  param_ptr->snapshot_reporter_period = value    ; } 
