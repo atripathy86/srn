@@ -1071,6 +1071,32 @@ void IO_Reporter::heartbeat()
 
 	}
 */
+	// Option B live visualization: emit one JSON line per heartbeat to stderr.
+	// Pipe with:  ./simulation config/config.dat 2>&1 1>/dev/null | python3 viz.py
+	// or:         ./simulation config/config.dat 2>viz_stream.jsonl &  tail -f viz_stream.jsonl | python3 viz.py
+	{
+		unsigned int q  = If_ptr->database_ptr->Queries_sent_from_UserNode;
+		unsigned int gr = If_ptr->database_ptr->Num_of_good_responses_for_UserNode;
+		unsigned int tm = If_ptr->database_ptr->Num_total_message_generated_for_UserNode;
+		float recall   = q ? 100.0f * (float)gr / (float)q : 0.0f;
+		float overhead = q ? (float)tm / (float)q           : 0.0f;
+		fprintf(stderr,
+			"{\"t\":%u,\"nodes\":{\"res\":%u,\"rtr\":%u,\"usr\":%u},"
+			"\"queries\":%u,\"good_resp\":%u,\"total_msg\":%u,"
+			"\"dupes_dropped\":%u,\"loop_dropped\":%u,\"ttl_dropped\":%u,"
+			"\"diameter\":%d,\"recall_pct\":%.1f,\"overhead\":%.2f}\n",
+			If_ptr->scheduler_ptr->now(),
+			(unsigned int)If_ptr->list_of_resource_nodes.size(),
+			(unsigned int)If_ptr->list_of_router_nodes.size(),
+			(unsigned int)If_ptr->list_of_user_nodes.size(),
+			q, gr, tm,
+			If_ptr->database_ptr->Num_duplicate_message_dropped,
+			If_ptr->database_ptr->Num_looping_message_dropped,
+			If_ptr->database_ptr->Num_queries_dropped_for_TTL,
+			If_ptr->analyst.diameter,
+			recall, overhead);
+	}
+
 	return;
 };
 

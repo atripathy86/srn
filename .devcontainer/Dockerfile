@@ -11,7 +11,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libboost-graph-dev \
     git \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Python viz dependencies for the live dashboard (viz.py).
+RUN pip3 install --no-cache-dir plotext
 
 # The Makefile calls 'g++34' (an old Debian package alias for GCC 3.4).
 # Create a symlink so the Makefile works without modification.
