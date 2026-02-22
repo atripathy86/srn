@@ -107,14 +107,14 @@ make          # produces the 'simulation' binary
 make clean    # remove compiled objects
 ```
 
-Compile-time feature flags (set in the Makefile):
+Compile-time feature flags (set in the Makefile `CFLAGS` line):
 
-| Flag | Effect |
-|------|--------|
-| `DEBUG` / `DEBUG_L1` / `DEBUG_L2` | Increasingly verbose stdout logging |
-| `DUPPACK_CACHE` | Drop packets seen before (duplicate suppression) |
-| `DETECT_LOOP` | Carry a visited-node list in each packet; drop looping packets |
-| `SELECTIVE_PACKET_FILTER` | Additional redundant-forwarding filter |
+| Flag | Effect | Default |
+|------|--------|---------|
+| `DEBUG` / `DEBUG_L1` / `DEBUG_L2` | Increasingly verbose per-tick/event logging (slow) | off |
+| `DUPPACK_CACHE` | Drop packets already seen (duplicate suppression) | on |
+| `DETECT_LOOP` | Carry a visited-node list in each packet; drop loops | on |
+| `SELECTIVE_PACKET_FILTER` | Additional redundant-forwarding filter | on |
 
 ---
 
@@ -127,6 +127,59 @@ Compile-time feature flags (set in the Makefile):
 
 The simulator writes all output to the current directory.  See
 [RESULTS.md](RESULTS.md) for a detailed description of every output file.
+
+### Build modes
+
+The Makefile has two CFLAGS lines; only one is active at a time:
+
+```makefile
+# Release (default) — no debug output, full speed
+CFLAGS=  -c -w -O2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER
+
+# Debug — verbose per-tick/event logging, much slower
+#CFLAGS=  -c -w -O2 -DDEBUG -DDEBUG_L1 -DDEBUG_L2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER -g
+```
+
+Switch between them with `make clean && make`.
+
+### Live dashboard (viz.py)
+
+Each heartbeat the simulator emits a JSON snapshot to **stderr**.
+`viz.py` reads that stream and renders a live terminal dashboard using
+[plotext](https://github.com/piccolomo/plotext) (installed automatically in
+the dev container).
+
+**Option 1 — see simulation progress *and* the dashboard simultaneously**
+(recommended: process substitution keeps stdout visible):
+
+```bash
+./simulation config/config.dat 2> >(python3 viz.py)
+```
+
+**Option 2 — dashboard only** (stdout discarded):
+
+```bash
+./simulation config/config.dat 2>&1 >/dev/null | python3 viz.py
+```
+
+**Option 3 — save stream, watch in a second terminal**:
+
+```bash
+# Terminal 1
+./simulation config/config.dat 2>viz_stream.jsonl
+
+# Terminal 2
+tail -f viz_stream.jsonl | python3 viz.py
+```
+
+**Replay a saved stream**:
+
+```bash
+python3 viz.py < viz_stream.jsonl
+```
+
+See [VISUALIZATION.md](VISUALIZATION.md) for the full design document
+including all three visualization options.
 
 Several ready-to-use config variants are included under `config/`:
 
