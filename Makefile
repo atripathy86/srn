@@ -1,4 +1,6 @@
 CC=g++34
+VPATH = src     # find .cpp and .hpp files in src/
+INCLUDES = -Isrc # so compiler finds headers after the move
 #CFLAGS=  -c -w -O2  -DDUPPACK_SET    
 #CFLAGS=  -c -w -O2  -DDEBUG  -DSET -g
 #CFLAGS=  -c -w -O2 -DDEBUG  -DDEBUG_L1 -DSET -g 
@@ -28,7 +30,7 @@ $(EXECUTABLE) : $(OBJS)
 
 
 .cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
 
 #${OBJS}
 

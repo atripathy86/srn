@@ -2,3 +2,18 @@ paper
 reference_papers
 *.o
 simulation
+
+# Simulation output — generated at runtime, not for version control
+*_netout.net
+*_netroutingtable
+*_netstrucrep
+*_perfrep
+*_ontorep
+*_ontoout.net
+ontoout.net
+ontorep
+netout.net
+netstrucrep
+perfrep
+oprnetperfrep
+netroutingtable

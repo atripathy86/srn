@@ -80,23 +80,23 @@ Compile-time feature flags (set in the Makefile):
 ## Running
 
 ```bash
-./simulation config.dat        # run with a specific config
-./simulation                   # prompts for config filename on stdin
+./simulation config/config.dat        # run with a specific config
+./simulation                          # prompts for config filename on stdin
 ```
 
 The simulator writes all output to the current directory.  See
 [RESULTS.md](RESULTS.md) for a detailed description of every output file.
 
-Several ready-to-use config variants are included:
+Several ready-to-use config variants are included under `config/`:
 
 | File | Description |
 |------|-------------|
-| `config.dat` | Default — small network, 202 ticks, good starting point |
-| `configbig.dat` | Large network — more nodes, bigger routing tables |
-| `config18.dat` / `config18big.dat` | Intermediate scale |
-| `configv.dat` / `configv1-4.dat` | Vocabulary-size sweep variants |
-| `configm.dat` | Minimal — short run, useful for quick sanity checks |
-| `configu.dat` | User-node focused — larger user population |
+| `config/config.dat` | Default — small network, 202 ticks, good starting point |
+| `config/configbig.dat` | Large network — more nodes, bigger routing tables |
+| `config/config18.dat` / `config/config18big.dat` | Intermediate scale |
+| `config/configv.dat` / `config/configv1-4.dat` | Vocabulary-size sweep variants |
+| `config/configm.dat` | Minimal — short run, useful for quick sanity checks |
+| `config/configu.dat` | User-node focused — larger user population |
 
 ---
 
@@ -166,7 +166,7 @@ Parameters can be given in any order.
 **`RouterNode_extroversion` is the single most impactful knob.**  At `1` the
 router only explores tags directly adjacent in the ontology; resources whose
 tag is two hops away may never be discovered.  At `3` the router sweeps a much
-wider semantic neighbourhood.  The comment in `config.dat` notes that a value
+wider semantic neighbourhood.  The comment in `config/config.dat` notes that a value
 of `1` fails to recall resources with certain tags.
 
 **Experiment — recall vs overhead:**
@@ -221,7 +221,7 @@ adapt.
 | `sw_model_probability` | 0.7 | Watts-Strogatz rewiring probability. `0.0` = regular ring lattice (high clustering, high diameter); `1.0` = random graph (low diameter, low clustering). Values around `0.1–0.3` give the small-world regime. |
 
 **Experiment — ontology structure:** compare `configm.dat` (p=0.02, near-lattice)
-with `config.dat` (p=0.7, near-random).  The `0_ontorep` file reports the
+with `config/config.dat` (p=0.7, near-random).  The `0_ontorep` file reports the
 ontology diameter — a key input to choosing TTL values.
 
 ---

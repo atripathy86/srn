@@ -38,5 +38,5 @@
   // Forward no ports by default; add entries here if the simulator ever gains a network UI
   "forwardPorts": [],
 
-  "postCreateCommand": "echo 'Run: make && ./simulation config.dat'"
+  "postCreateCommand": "echo 'Run: make && ./simulation config/config.dat'"
 }
