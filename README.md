@@ -30,20 +30,40 @@ The simulation asks: *does this decentralised, semantics-aware routing
 self-organise into a network that can satisfy user queries at acceptable
 overhead?*
 
+```mermaid
+graph TD
+    subgraph overlay["P2P Overlay"]
+        R0([RouterNode 0])
+        R1([RouterNode 1])
+        R2([RouterNode 2])
+        R0 <-->|routing| R1
+        R1 <-->|routing| R2
+        R0 <-->|routing| R2
+    end
+
+    RES1["ResourceNode\ntag: Music"] -->|advertise| R0
+    RES2["ResourceNode\ntag: Science"] -->|advertise| R1
+    RES3["ResourceNode\ntag: Art"] -->|advertise| R2
+
+    U1[UserNode A] -->|"query: Music"| R0
+    U2[UserNode B] -->|"query: Art"| R1
+
+    style R0 fill:#d4e6f1,stroke:#2980b9
+    style R1 fill:#d4e6f1,stroke:#2980b9
+    style R2 fill:#d4e6f1,stroke:#2980b9
+    style RES1 fill:#d5f5e3,stroke:#27ae60
+    style RES2 fill:#d5f5e3,stroke:#27ae60
+    style RES3 fill:#d5f5e3,stroke:#27ae60
+    style U1 fill:#fdebd0,stroke:#e67e22
+    style U2 fill:#fdebd0,stroke:#e67e22
+```
+
 ---
 
 ## Protocol lifecycle (one node's life)
 
 Every node runs on a repeating heartbeat timer.  Each heartbeat goes through
 these phases in order:
-
-```
-1. Bootstrap     — find a few known RouterNodes to attach to
-2. Advertise     — send queries about your own tags so routers learn you exist
-3. Explore       — RouterNodes probe semantically nearby tags to grow their table
-4. Housekeeping  — trim oversized routing tables / known-router lists
-5. Respond       — answer any pending queries that match your description
-```
 
 **ResourceNodes** advertise their description tags and answer matching queries.
 
@@ -56,6 +76,27 @@ time without any central authority.
 **UserNodes** join late (configurable via `Birth_UserNode_start_time`), attach
 to a few routers, and then periodically submit queries.  A good response is one
 that reaches a ResourceNode whose description matches the query tag.
+
+```mermaid
+flowchart TD
+    N([Heartbeat fires]) --> B
+
+    B["① Bootstrap\nAttach to known RouterNodes"]
+    A["② Advertise\nSend queries for own tags\nso routers learn this node exists"]
+    E{"RouterNode?"}
+    EX["③ Explore\nPick centroid tags from routing table\nProbe semantically adjacent tags\n— extroversion hops out —"]
+    H["④ Housekeeping\nTrim routing table if over threshold\nTrim known-routers list"]
+    R["⑤ Respond\nAnswer pending queries\nthat match description"]
+    W["Wait vitality ticks"]
+
+    B --> A --> E
+    E -- Yes --> EX --> H
+    E -- No --> H
+    H --> R --> W --> N
+
+    style EX fill:#d4e6f1,stroke:#2980b9
+    style N fill:#f9f9f9,stroke:#aaa
+```
 
 ---
 
@@ -257,24 +298,77 @@ fill in) while overhead stabilises or falls.  A poorly tuned one shows
 high overhead with flat or declining recall (TTL too low, extroversion too low,
 or tables too small).
 
+The diagram below shows which parameters most directly drive which outcomes:
+
+```mermaid
+graph LR
+    subgraph params["Key Parameters"]
+        EX[RouterNode_extroversion]
+        TTL[message_time_to_live]
+        TR[ResourceNode_translation_radius]
+        K[RouterNode_k]
+        SW[sw_model_probability]
+    end
+
+    subgraph outcomes["Outcomes — read from T_perfrep"]
+        RC["Recall Rate\ngood_responses / queries"]
+        OH["Message Overhead\ntotal_messages / queries"]
+        CV["Convergence Speed\nticks to stable recall"]
+    end
+
+    EX -->|"higher = improves"| RC
+    EX -->|"higher = raises"| OH
+    TTL -->|"higher = improves"| RC
+    TTL -->|"higher = raises"| OH
+    TR -->|"higher = widens match"| RC
+    K -->|"higher = improves"| RC
+    K -->|"higher = raises"| OH
+    SW -->|"shapes graph diameter"| CV
+    SW -->|"affects reachability"| RC
+
+    style RC fill:#d5f5e3,stroke:#27ae60
+    style OH fill:#fdebd0,stroke:#e67e22
+    style CV fill:#d4e6f1,stroke:#2980b9
+```
+
 ---
 
 ## Architecture
 
-```
-simulation.cpp          Main driver — reads config, wires components, runs event loop
-├── Infrastructure      Global container (scheduler, database, analyst, reporter, node lists)
-├── Scheduler           Discrete-event engine backed by std::multiset
-├── SmallWorldGenerator Boost Graph Library — generates the semantic ontology
-├── OntologyRepository  Bellman-Ford shortest paths on the ontology graph
-├── Node / ProxyAgent   Node hierarchy + template-based birth agents
-│   ├── ResourceNode    Advertises resources; answers matching queries
-│   ├── RouterNode      Maintains routing table; forwards queries; explores
-│   └── UserNode        Submits queries; collects responses
-├── Message             Query / Response / Feedback with TTL and loop-detection
-├── Database            Counters & histograms for queries, responses, drops
-├── Analyst             Extracts structural metrics from live routing tables
-└── IO_Reporter         Writes Pajek, text-structure, and performance reports
+```mermaid
+graph TD
+    SIM["simulation.cpp\nentry point"] --> INF
+
+    subgraph core["Core Infrastructure"]
+        INF["Infrastructure\nglobal container"]
+        SCH["Scheduler\ndiscrete-event engine\nstd::multiset"]
+        DB["Database\ncounters and histograms"]
+        ANA["Analyst\nnetwork metrics"]
+        REP["IO_Reporter\nfile output"]
+    end
+
+    subgraph sem["Semantic Layer"]
+        SWG["SmallWorldGenerator\nWatts-Strogatz\nBoost Graph Library"]
+        ONT["OntologyRepository\nBellman-Ford distances\nbetween tags"]
+    end
+
+    subgraph nl["Node Layer"]
+        BA["BirthAgent\ntemplate proxy\ncreates nodes on schedule"]
+        RES["ResourceNode\nadvertise and respond"]
+        RTR["RouterNode\nroute and explore"]
+        USR["UserNode\nquery and collect"]
+    end
+
+    INF --> SCH & DB & ANA & REP & ONT
+    SWG --> ONT
+    SCH -->|"fires periodically"| BA
+    BA -->|"creates"| RES & RTR & USR
+    ONT -->|"semantic relevance\nfor routing table ordering"| RTR
+    DB & ANA -->|"data"| REP
+
+    style INF fill:#f4f6f7
+    style ONT fill:#d4e6f1,stroke:#2980b9
+    style RTR fill:#d4e6f1,stroke:#2980b9
 ```
 
 Key design patterns: event-driven scheduling, template proxy (`BirthAgent<T>`),

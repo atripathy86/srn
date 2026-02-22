@@ -8,6 +8,31 @@ by tags), **RouterNodes** (route queries through the overlay), and **UserNodes**
 At each snapshot tick `T` the simulator writes four timestamped files
 `T_<name>` plus two once-only ontology files written at startup.
 
+The diagram below shows how a user query travels through the overlay and which
+output files capture each part of that journey:
+
+```mermaid
+sequenceDiagram
+    participant U as UserNode
+    participant R1 as RouterNode 1
+    participant R2 as RouterNode 2
+    participant RES as ResourceNode
+
+    Note over U,RES: Counters written to T_perfrep at each snapshot tick
+
+    U->>R1: Query(tag, TTL=5)
+    Note over R1: routing table lookup<br/>top-k next hops for tag<br/>— recorded in T_netroutingtable —
+    R1->>R2: Forward Query (TTL=4)
+    R2->>RES: Forward Query (TTL=3)
+    Note over RES: tag within translation_radius → match
+    RES-->>R2: Response
+    R2-->>R1: Response
+    R1-->>U: Response ✓
+    Note over U: Num_of_good_responses_for_UserNode++
+
+    Note over U,RES: T_netout.net records the overlay topology<br/>T_netstrucrep records hop-count distributions
+```
+
 ---
 
 ## Ontology files (written once at startup)
