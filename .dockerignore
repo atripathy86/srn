@@ -1,15 +1,5 @@
-# Compiled objects and binary — no need to send to Docker daemon
-*.o
-simulation
-
-# Generated output files
-*.net
-*_perfrep
-*_netstrucrep
-*_netroutingtable
-*_ontorep
-ontorep
-ontoout.net
+# All build artifacts and simulation output land in output/ — no need to send to Docker daemon
+output/
 
 # Editor / OS noise
 .vscode/

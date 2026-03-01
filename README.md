@@ -121,7 +121,7 @@ Requires: [Docker](https://docs.docker.com/get-docker/) and the
 
    ```bash
    make
-   ./simulation config/config.dat
+   ./output/simulation config/config.dat
    ```
 
 The container mounts `~/.claude` and `~/.claude.json` from your host so Claude
@@ -145,7 +145,7 @@ docker run --rm -it \
 
 # 3. Inside the container — compile and run
 make
-./simulation config/config.dat
+./output/simulation config/config.dat
 ```
 
 To run non-interactively (e.g. in CI):
@@ -154,7 +154,7 @@ To run non-interactively (e.g. in CI):
 docker run --rm \
   -v "$(pwd)":/workspace \
   -w /workspace \
-  srn bash -c "make && ./simulation config/config.dat"
+  srn bash -c "make && ./output/simulation config/config.dat"
 ```
 
 Output files are written into the mounted directory and appear on your host
@@ -177,7 +177,7 @@ sudo dnf install -y gcc-c++ make boost-devel
 sudo ln -s /usr/bin/g++ /usr/local/bin/g++34
 
 make
-./simulation config/config.dat
+./output/simulation config/config.dat
 ```
 
 ---
@@ -185,8 +185,8 @@ make
 ## Building
 
 ```bash
-make          # produces the 'simulation' binary
-make clean    # remove compiled objects
+make          # produces output/simulation and output/*.o
+make clean    # removes the entire output/ directory
 ```
 
 Compile-time feature flags (set in the Makefile `CFLAGS` line):
@@ -203,11 +203,12 @@ Compile-time feature flags (set in the Makefile `CFLAGS` line):
 ## Running
 
 ```bash
-./simulation config/config.dat        # run with a specific config
-./simulation                          # prompts for config filename on stdin
+./output/simulation config/config.dat   # run with a specific config
+./output/simulation                     # prompts for config filename on stdin
 ```
 
-The simulator writes all output to the current directory.  See
+The simulator creates an `output/` directory (from the `output_dir` config
+parameter) and writes all generated files there.  See
 [RESULTS.md](RESULTS.md) for a detailed description of every output file.
 
 ### Build modes
@@ -235,20 +236,20 @@ the dev container).
 (recommended: process substitution keeps stdout visible):
 
 ```bash
-./simulation config/config.dat 2> >(python3 viz.py)
+./output/simulation config/config.dat 2> >(python3 viz.py)
 ```
 
 **Option 2 — dashboard only** (stdout discarded):
 
 ```bash
-./simulation config/config.dat 2>&1 >/dev/null | python3 viz.py
+./output/simulation config/config.dat 2>&1 >/dev/null | python3 viz.py
 ```
 
 **Option 3 — save stream, watch in a second terminal**:
 
 ```bash
 # Terminal 1
-./simulation config/config.dat 2>viz_stream.jsonl
+./output/simulation config/config.dat 2>viz_stream.jsonl
 
 # Terminal 2
 tail -f viz_stream.jsonl | python3 viz.py
@@ -524,13 +525,13 @@ observer (`Listener`), and compile-time feature flags.
 
 See [RESULTS.md](RESULTS.md) for a full description of every output file format.
 
-Snapshot files are prefixed with the tick number (e.g. `41_perfrep`):
+All output lands in `output/`. Snapshot files are prefixed with the tick number (e.g. `output/41_perfrep`):
 
 | File | Content |
 |------|---------|
-| `T_netout.net` | Pajek-format network topology — load in Gephi or NetworkX |
-| `T_netroutingtable` | Full routing table contents per RouterNode |
-| `T_netstrucrep` | Structural metrics: diameter, distance histogram, routing table histograms |
-| `T_perfrep` | Performance counters: recall, drops, overhead |
-| `0_ontoout.net` | Semantic ontology graph (Pajek) |
-| `0_ontorep` | Ontology diameter and distance matrix |
+| `output/T_netout.net` | Pajek-format network topology — load in Gephi or NetworkX |
+| `output/T_netroutingtable` | Full routing table contents per RouterNode |
+| `output/T_netstrucrep` | Structural metrics: diameter, distance histogram, routing table histograms |
+| `output/T_perfrep` | Performance counters: recall, drops, overhead |
+| `output/0_ontoout.net` | Semantic ontology graph (Pajek) |
+| `output/0_ontorep` | Ontology diameter and distance matrix |

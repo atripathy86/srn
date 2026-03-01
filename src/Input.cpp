@@ -85,6 +85,9 @@ InputParameters::InputParameters () //constructor
 			degree_of_associativity_of_words = 4;
 			sw_model_probability = 0.02;
 
+			//Output directory
+			strcpy(output_dir,"output");
+
 			//File names
 			strcpy(input_onto_file_name,"ontoin");
 			strcpy(output_onto_file_name,"ontoout.net");

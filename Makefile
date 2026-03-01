@@ -1,6 +1,8 @@
 CC=g++34
 VPATH = src     # find .cpp and .hpp files in src/
 INCLUDES = -Isrc # so compiler finds headers after the move
+OUTDIR = output
+$(shell mkdir -p $(OUTDIR))
 #CFLAGS=  -c -w -O2  -DDUPPACK_SET    
 #CFLAGS=  -c -w -O2  -DDEBUG  -DSET -g
 #CFLAGS=  -c -w -O2 -DDEBUG  -DDEBUG_L1 -DSET -g 
@@ -15,21 +17,23 @@ CFLAGS=  -c -w -O2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER  # re
 
 
 
-OBJS = $(SRCS:.cpp=.o)
-#SRCS =  OntologyRepository.cpp Database.cpp Event.cpp  Infrastructure.cpp Analyst.cpp Node.cpp  Listener.cpp  IO_Reporter.cpp Input.cpp Scheduler.cpp simulation.cpp 
+#OBJS = $(SRCS:.cpp=.o)  # old: objects in root dir
+OBJS = $(addprefix $(OUTDIR)/, $(SRCS:.cpp=.o))
+#SRCS =  OntologyRepository.cpp Database.cpp Event.cpp  Infrastructure.cpp Analyst.cpp Node.cpp  Listener.cpp  IO_Reporter.cpp Input.cpp Scheduler.cpp simulation.cpp
 
-SRCS =  OntologyRepository.cpp Database.cpp Event.cpp  Infrastructure.cpp Analyst.cpp Node.cpp  Listener.cpp  IO_Reporter.cpp Input.cpp Scheduler.cpp simulation.cpp 
+SRCS =  OntologyRepository.cpp Database.cpp Event.cpp  Infrastructure.cpp Analyst.cpp Node.cpp  Listener.cpp  IO_Reporter.cpp Input.cpp Scheduler.cpp simulation.cpp
 EXECUTABLE = simulation
 
-all:  $(SRCS) $(EXECUTABLE)
-#	$(CC) ${OBJS} -o $(EXECUTABLE) 
+all:  $(OUTDIR)/$(EXECUTABLE)
+#	$(CC) ${OBJS} -o $(EXECUTABLE)
 
+#$(EXECUTABLE) : $(OBJS)  # old: binary in root dir
+$(OUTDIR)/$(EXECUTABLE) : $(OBJS)
+	$(CC) ${OBJS} -o $@
 
-$(EXECUTABLE) : $(OBJS)
-	$(CC) ${OBJS} -o $@  
-
-
-.cpp.o:
+#.cpp.o:  # old suffix rule: objects in root dir
+#	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+$(OUTDIR)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
 
 #${OBJS}
@@ -41,5 +45,5 @@ $(EXECUTABLE) : $(OBJS)
 
 
 clean:
-	rm -rf *.o $(EXECUTABLE)
+	rm -rf $(OUTDIR)
 

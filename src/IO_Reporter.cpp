@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>  // mkdir
 
 #include "ForwardDeclaration.hpp"
 #include "Database.hpp"
@@ -155,6 +156,8 @@ void IO_Reporter::read_input_parameter(char *passed_input_file_name, Infrastruct
 					else if (strcmp(temp, "trace_destination_node_id") ==0 ) { (*ss_ptr)>>value;  param_ptr->trace_destination_node_id = value    ; } 
 					else if (strcmp(temp, "trace_tag") ==0 ) { (*ss_ptr)>>value;  param_ptr->trace_tag = value    ; } 
 
+					else if (strcmp(temp, "output_dir") ==0 ) { (*ss_ptr)>>temp2; strcpy(param_ptr->output_dir, temp2); } 
+
 
 			 // else {std::cout<<std::endl<<"Unexpected Parameter: Read: "<<smline<<std::endl;}
 
@@ -170,6 +173,9 @@ void IO_Reporter::read_input_parameter(char *passed_input_file_name, Infrastruct
 		file.close();
 
 		verify_config_data();
+
+		// Create output directory (no-op if it already exists)
+		mkdir(param_ptr->output_dir, 0755);
 
 		return;	
 };
@@ -368,8 +374,9 @@ void IO_Reporter::write_network_to_pajek_file(unsigned int num_vertices, unsigne
 				printf("called :write_network_to_pajek_file with num_vertices=%d num_edge=%d\n",num_vertices,num_edges);
 			#endif	
 			std::ofstream file;
-			char filename[30];
-			snprintf(filename,27,"%u_%s",passed_current_time,passed_output_file_name);
+			char filename[256];
+			//snprintf(filename,27,"%u_%s",passed_current_time,passed_output_file_name); // old: no output dir
+			snprintf(filename,256,"%s/%u_%s",param_ptr->output_dir,passed_current_time,passed_output_file_name);
 
 
 			std::FILE * fileptr;
@@ -436,8 +443,9 @@ void IO_Reporter::write_structural_report(unsigned int num_vertices, int diamete
 			#ifdef DEBUG
 				printf("called :write_structural_report with num_vertices = %d , diameter = %d\n",num_vertices,diameter);
 			#endif	
-			char filename[30];
-			snprintf(filename,30,"%ld_%s",passed_current_time,passed_struct_report_file_name);
+			char filename[256];
+			//snprintf(filename,30,"%ld_%s",passed_current_time,passed_struct_report_file_name); // old: no output dir
+			snprintf(filename,256,"%s/%ld_%s",param_ptr->output_dir,passed_current_time,passed_struct_report_file_name);
 		
 			std::FILE * fileptr;
 			fileptr=fopen(filename,"w");
@@ -613,8 +621,9 @@ void IO_Reporter::write_performance_report(char *passed_perf_report_file_name , 
 	//Suneil : Added:July-21st :1:45pm 
 	unsigned int sum_num_resources, sum_num_good_responses,sum_num_queries ;
 	float recall_rate_per_query;
-	char filename[30];
-	snprintf(filename,30,"%ld_%s",current_time,passed_perf_report_file_name);
+	char filename[256];
+	//snprintf(filename,30,"%ld_%s",current_time,passed_perf_report_file_name); // old: no output dir
+	snprintf(filename,256,"%s/%ld_%s",param_ptr->output_dir,current_time,passed_perf_report_file_name);
 
 	std::FILE * fileptr;
 	fileptr=fopen(filename,"w");	
@@ -857,8 +866,9 @@ void IO_Reporter::write_routing_table_content_report(char * passed_routing_table
 				std::vector<RouterNode *>::iterator list_of_router_nodes_itr;
 				//unsigned int i;
 
-				char fname[30];
-				snprintf(fname,30,"%d_%s",passed_current_time,passed_routing_table_content_report_file_name);
+				char fname[256];
+				//snprintf(fname,30,"%d_%s",passed_current_time,passed_routing_table_content_report_file_name); // old: no output dir
+				snprintf(fname,256,"%s/%d_%s",param_ptr->output_dir,passed_current_time,passed_routing_table_content_report_file_name);
  				std::FILE * fileptr;
 				fileptr=fopen(fname,"w");
 				if(!fileptr)

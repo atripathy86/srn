@@ -84,6 +84,9 @@ class InputParameters{
 		unsigned int degree_of_associativity_of_words;
 		float sw_model_probability;
 		
+		//Output directory (all generated files land here)
+		char output_dir[64];
+
 		//File names
 		char input_onto_file_name[20];
 		char output_onto_file_name[20];
