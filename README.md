@@ -100,6 +100,88 @@ flowchart TD
 
 ---
 
+## Getting started
+
+Choose one of the three ways to get a working build environment.
+
+---
+
+### Option A — VS Code Dev Container (recommended)
+
+Requires: [Docker](https://docs.docker.com/get-docker/) and the
+[Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+
+1. Clone the repo and open the folder in VS Code.
+2. When prompted "Reopen in Container", click it — or run
+   **F1 → Dev Containers: Reopen in Container**.
+3. VS Code builds the image (first time only, ~2 min), then drops you into a
+   fully configured environment with `g++34`, Boost, `make`, and Claude Code
+   already installed.
+4. Open the integrated terminal and build:
+
+   ```bash
+   make
+   ./simulation config/config.dat
+   ```
+
+The container mounts `~/.claude` and `~/.claude.json` from your host so Claude
+Code is authenticated automatically.
+
+---
+
+### Option B — Plain Docker (no VS Code)
+
+Requires: [Docker](https://docs.docker.com/get-docker/).
+
+```bash
+# 1. Build the image from the repo root
+docker build -f .devcontainer/Dockerfile -t srn .
+
+# 2. Run an interactive shell with the source tree mounted
+docker run --rm -it \
+  -v "$(pwd)":/workspace \
+  -w /workspace \
+  srn bash
+
+# 3. Inside the container — compile and run
+make
+./simulation config/config.dat
+```
+
+To run non-interactively (e.g. in CI):
+
+```bash
+docker run --rm \
+  -v "$(pwd)":/workspace \
+  -w /workspace \
+  srn bash -c "make && ./simulation config/config.dat"
+```
+
+Output files are written into the mounted directory and appear on your host
+immediately after the run.
+
+---
+
+### Option C — Build natively (Linux)
+
+Requires: `g++`, `make`, and the Boost Graph Library headers.
+
+```bash
+# Debian / Ubuntu
+sudo apt-get install -y g++ make libboost-graph-dev
+
+# Fedora / RHEL
+sudo dnf install -y gcc-c++ make boost-devel
+
+# Then create the g++34 alias the Makefile expects
+sudo ln -s /usr/bin/g++ /usr/local/bin/g++34
+
+make
+./simulation config/config.dat
+```
+
+---
+
 ## Building
 
 ```bash
