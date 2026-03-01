@@ -99,6 +99,7 @@ class Database {
 	//void take_snapshot(); //creates a snapshot of all the above values when called
 	//void hops_at_response(unsigned int hop_count, MessageType message_type); // creates the histrogram for average number of hops for good responses
 	void record_hops(unsigned int hop_count, unsigned int *passed_ctr);
+	void reinit(); // re-allocate param-dependent arrays after config is parsed
 
 
 

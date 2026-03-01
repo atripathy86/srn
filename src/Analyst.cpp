@@ -118,8 +118,10 @@ void Analyst::extract_edge_list() {
 		//.For the Routing table histogram
 		unsigned int curr_routing_table_max_width;
 		memset(routing_table_length_histogram,0,(If_ptr->param_ptr->RouterNode_routing_table_max_length+1)*4);  //set all counters to zero
-		memset(routing_table_width_histogram,0,(If_ptr->param_ptr->RouterNode_routing_table_max_length+1)*4);  //set all counters to zero
-		memset(routing_table_max_width_histogram,0,(If_ptr->param_ptr->RouterNode_routing_table_max_length+1)*4);  //set all counters to zero
+		//memset(routing_table_width_histogram,0,(If_ptr->param_ptr->RouterNode_routing_table_max_length+1)*4);  // BUG: width histogram allocated max_width+1, not max_length+1
+		//memset(routing_table_max_width_histogram,0,(If_ptr->param_ptr->RouterNode_routing_table_max_length+1)*4);  // BUG: same
+		memset(routing_table_width_histogram,     0, (If_ptr->param_ptr->RouterNode_routing_table_max_width+1)*4);
+		memset(routing_table_max_width_histogram, 0, (If_ptr->param_ptr->RouterNode_routing_table_max_width+1)*4);
 
 		num_vertices = If_ptr->list_of_router_nodes.size() + If_ptr->list_of_resource_nodes.size();
 		
@@ -203,8 +205,9 @@ void Analyst::extract_edge_list() {
 					//Generate the max width for this routing table row
 					if (curr_routing_table_max_width < ((*routing_table_itr).second)->destinations.size() )
 							curr_routing_table_max_width = ((*routing_table_itr).second)->destinations.size();
-					//Record the freq of width
-					routing_table_width_histogram[ ((*routing_table_itr).second)->destinations.size()]++;
+					//Record the freq of width -- guard restored: actual size can exceed allocated max with large birth-cycle configs
+					if (((*routing_table_itr).second)->destinations.size() <= (unsigned int)If_ptr->param_ptr->RouterNode_routing_table_max_width)
+						routing_table_width_histogram[ ((*routing_table_itr).second)->destinations.size()]++;
 
 					routing_table_itr++;
 			}
@@ -216,10 +219,12 @@ void Analyst::extract_edge_list() {
 						exit(1);
 					}
 			*/
-			//Record the max width for this routing table row
-			routing_table_max_width_histogram[ curr_routing_table_max_width ]++;
-			//Record routing_table_length
-			routing_table_length_histogram[(*list_of_router_nodes_itr)->routing_table.size()]++;
+			//Record the max width for this routing table row -- guard restored
+			if (curr_routing_table_max_width <= (unsigned int)If_ptr->param_ptr->RouterNode_routing_table_max_width)
+				routing_table_max_width_histogram[ curr_routing_table_max_width ]++;
+			//Record routing_table_length -- guard restored
+			if ((*list_of_router_nodes_itr)->routing_table.size() <= (unsigned int)If_ptr->param_ptr->RouterNode_routing_table_max_length)
+				routing_table_length_histogram[(*list_of_router_nodes_itr)->routing_table.size()]++;
 
 
 			list_of_router_nodes_itr++;

@@ -82,6 +82,39 @@ the for-loop's `run_periodic_itr++` ran.
 advance to the saved iterator afterward (`execute_periodic_schedule()`,
 [src/Scheduler.cpp:131-154](src/Scheduler.cpp#L131-L154)).
 
+### 5. `src/simulation.cpp` — `input_file_name[20]` overflows for deep paths
+**Symptom:** Crash (exit 133, SIGTRAP) when passing a config path ≥ 20 chars
+(e.g. `logs/config17/run.dat` = 21 chars).  `run.sh` uses patched configs in
+`logs/<name>/run.dat`, so all runs except `logs/config/run.dat` (19 chars)
+crashed.
+**Fix:** `char input_file_name[20]` → `char input_file_name[256]`
+([src/simulation.cpp:70](src/simulation.cpp#L70)).
+
+### 6. `src/Analyst.cpp` — histogram arrays overrun with large birth-cycle configs
+**Symptom:** SIGTRAP on configs where the actual routing table width/length
+exceeds `RouterNode_routing_table_max_width` / `RouterNode_routing_table_max_length`.
+**Root cause:** Three histogram arrays allocated `[max+1]` but indexed by the
+actual (unbounded) value; the original bounds-check guards were commented out.
+**Fix:** Restored guards as `if (actual <= max) histogram[actual]++;` for all
+three histograms ([src/Analyst.cpp:207,220,222](src/Analyst.cpp#L207)).
+
+---
+
+## Known pre-existing crashes (9 of 13 configs)
+
+After the above fixes, 4/13 configs pass cleanly.  The remaining 9 exhibit
+`free(): invalid pointer` (exit 133) or SIGSEGV (exit 139):
+
+| Passing | Failing |
+|---------|---------|
+| config, config17, config18, config18big | config_1, configbig, configm, configu, configv, configv1–v4 |
+
+The crashes are **pre-existing heap corruption bugs in the simulation's routing
+/ duplicate-packet-cache logic**, not caused by the changes in sessions 1–2.
+They manifest as heap corruption detected by glibc during a later `fopen` /
+`malloc` call.  To diagnose: rebuild with `-fsanitize=address` (AddressSanitizer)
+to get a real stack trace pointing at the first bad write.
+
 ---
 
 ## Repo restructure (completed)

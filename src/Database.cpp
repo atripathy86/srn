@@ -178,6 +178,66 @@ Database::Database(Infrastructure* passed_If_ptr) //constructor
 
 }; //close of constructor
 
+// Re-allocate all param-dependent arrays using the actual parsed values.
+// Called from simulation.cpp immediately after read_input_parameter() returns,
+// because Database is constructed (in Infrastructure::Infrastructure()) before
+// the config file is parsed, so the constructor uses default param values.
+void Database::reinit() {
+	// Recalculate bucket counts from actual params
+	num_buckets             = param_ptr->DatabaseMaxHops            / param_ptr->DatabaseHistResolution;
+	num_buckets_for_UserNode= param_ptr->DatabaseMaxHops_for_UserNode / param_ptr->DatabaseHistResolution_for_UserNode;
+
+	// Reallocate hop-count histogram arrays (previously sized with default params)
+	delete[] hops_before_response_ctr;
+	hops_before_response_ctr = new unsigned int[num_buckets+2];
+	memset(hops_before_response_ctr, 0, (num_buckets+2)*sizeof(unsigned int));
+
+	delete[] longevity_of_message_ctr_for_TTL;
+	longevity_of_message_ctr_for_TTL = new unsigned int[num_buckets+2];
+	memset(longevity_of_message_ctr_for_TTL, 0, (num_buckets+2)*sizeof(unsigned int));
+
+	delete[] longevity_of_message_ctr_for_loop;
+	longevity_of_message_ctr_for_loop = new unsigned int[num_buckets+2];
+	memset(longevity_of_message_ctr_for_loop, 0, (num_buckets+2)*sizeof(unsigned int));
+
+	delete[] hops_before_response_ctr_for_UserNode;
+	hops_before_response_ctr_for_UserNode = new unsigned int[num_buckets_for_UserNode+2];
+	memset(hops_before_response_ctr_for_UserNode, 0, (num_buckets_for_UserNode+2)*sizeof(unsigned int));
+
+	delete[] longevity_of_message_ctr_for_TTL_for_UserNode;
+	longevity_of_message_ctr_for_TTL_for_UserNode = new unsigned int[num_buckets_for_UserNode+2];
+	memset(longevity_of_message_ctr_for_TTL_for_UserNode, 0, (num_buckets_for_UserNode+2)*sizeof(unsigned int));
+
+	delete[] longevity_of_message_ctr_for_loop_for_UserNode;
+	longevity_of_message_ctr_for_loop_for_UserNode = new unsigned int[num_buckets_for_UserNode+2];
+	memset(longevity_of_message_ctr_for_loop_for_UserNode, 0, (num_buckets_for_UserNode+2)*sizeof(unsigned int));
+
+	// Reallocate tag-indexed arrays in case num_words differs from default
+	delete[] Num_of_queries_for_specific_tag;
+	Num_of_queries_for_specific_tag = new unsigned int[param_ptr->num_words];
+	memset(Num_of_queries_for_specific_tag, 0, param_ptr->num_words*sizeof(unsigned int));
+
+	delete[] Num_of_good_responses_for_specific_tag;
+	Num_of_good_responses_for_specific_tag = new unsigned int[param_ptr->num_words];
+	memset(Num_of_good_responses_for_specific_tag, 0, param_ptr->num_words*sizeof(unsigned int));
+
+	delete[] num_resource_with_specific_tag;
+	num_resource_with_specific_tag = new unsigned int[param_ptr->num_words];
+	memset(num_resource_with_specific_tag, 0, param_ptr->num_words*sizeof(unsigned int));
+
+	delete[] num_router_with_specific_tag;
+	num_router_with_specific_tag = new unsigned int[param_ptr->num_words];
+	memset(num_router_with_specific_tag, 0, param_ptr->num_words*sizeof(unsigned int));
+
+	delete[] Num_of_good_responses_for_specific_tag_for_UserNode;
+	Num_of_good_responses_for_specific_tag_for_UserNode = new unsigned int[param_ptr->num_words];
+	memset(Num_of_good_responses_for_specific_tag_for_UserNode, 0, param_ptr->num_words*sizeof(unsigned int));
+
+	delete[] Num_of_queries_for_specific_tag_from_UserNode;
+	Num_of_queries_for_specific_tag_from_UserNode = new unsigned int[param_ptr->num_words];
+	memset(Num_of_queries_for_specific_tag_from_UserNode, 0, param_ptr->num_words*sizeof(unsigned int));
+}
+
 Database::~Database() //destructor
 {
 #ifdef DEBUG
@@ -231,7 +291,8 @@ void Database::record_hops(unsigned int hop_count, unsigned int *passed_ctr)
 		if (hop_count > param_ptr->DatabaseMaxHops ) //if a value greater than the permitted number of hops then push to overflow bucket
 			{
 				//++(passed_ctr[DatabaseMaxHops]); 
-				(passed_ctr[histogram_index +1])++; 
+				//(passed_ctr[histogram_index +1])++; // BUG: histogram_index = hop_count/resolution can be >> num_buckets
+				(passed_ctr[num_buckets + 1])++; // catch-all overflow bucket at fixed index num_buckets+1
 
 				return;
 			}

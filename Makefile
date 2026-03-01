@@ -13,6 +13,7 @@ $(shell mkdir -p $(OUTDIR))
 #CFLAGS=  -c -w -O2 -DDEBUG  -DDEBUG_L1 -DDEBUG_L2 -DSELECTIVE_PACKET_FILTER -g 
 #CFLAGS=  -c -w -O2 -DDEBUG  -DDEBUG_L1 -DDEBUG_L2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER -g  # debug build: verbose per-tick/event output, very slow
 CFLAGS=  -c -w -O2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER  # release build: no debug output
+#CFLAGS=  -c -w -O2 -DDUPPACK_CACHE -DDETECT_LOOP -DSELECTIVE_PACKET_FILTER -fsanitize=address -g  # ASAN build: heap corruption diagnosis
 #CFLAGS=  -c -w -O2 -DDEBUG  -DDEBUG_L1 -DDEBUG_L2 -DDUPPACK_SET -DSELECTIVE_PACKET_FILTER  -DDEBUG_FAULT2 -g 
 
 

@@ -4,3 +4,4 @@ reference_papers
 # All build artifacts and simulation output go into output/
 output/
 .claude/
+logs/

@@ -93,9 +93,12 @@ inline void RouterNode::trim_routing_table_specific_width(RoutingTableRow * row_
 		{
 			//printf(" -erased ");
 
+			//destinations_to_trim.erase( routing_table_entry_itr ); // BUG: iterator invalidated; line below used to read node_type after free
+			bool erased_is_resource = ((*routing_table_entry_itr)->node_type == RESOURCE_NODE); // save before erase
 			destinations_to_trim.erase( routing_table_entry_itr );
 		
-			if ((*routing_table_entry_itr)->node_type == RESOURCE_NODE)	row_to_trim_ptr->num_resource_nodes--;
+			//if ((*routing_table_entry_itr)->node_type == RESOURCE_NODE)	row_to_trim_ptr->num_resource_nodes--; // UAF: iterator invalid after erase
+			if (erased_is_resource)	row_to_trim_ptr->num_resource_nodes--;
 
 			fi--;
 			routing_table_entry_itr = destinations_to_trim.begin();//routing_table_entry_itr;
@@ -682,8 +685,11 @@ inline void ResourceNode::send_queries_from(std::list<Query*> &query_bag, std::l
 			for(int fi=0;fi<num_queries_to_send;fi++)
 			{
 
-				if (curr_query_bag_itr == query_bag.end())
+				//if (curr_query_bag_itr == query_bag.end()) // BUG: wrap-around did not guard against empty bag
+				if (curr_query_bag_itr == query_bag.end()) {
 								curr_query_bag_itr = query_bag.begin();
+								if (curr_query_bag_itr == query_bag.end()) break; // empty bag: avoid null-deref
+				}
 
 
 #ifdef DEBUG_L2

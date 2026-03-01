@@ -16,8 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python viz dependencies for the live dashboard (viz.py).
-RUN pip3 install --no-cache-dir plotext
+# Install Python viz dependencies:
+#   plotext  — live terminal dashboard (viz.py)
+#   networkx + matplotlib — static .net graph rendering (net_viz.py)
+RUN pip3 install --no-cache-dir plotext networkx matplotlib
 
 # The Makefile calls 'g++34' (an old Debian package alias for GCC 3.4).
 # Create a symlink so the Makefile works without modification.

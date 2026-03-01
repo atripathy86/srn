@@ -529,9 +529,69 @@ All output lands in `output/`. Snapshot files are prefixed with the tick number 
 
 | File | Content |
 |------|---------|
-| `output/T_netout.net` | Pajek-format network topology — load in Gephi or NetworkX |
+| `output/T_netout.net` | Pajek-format network topology snapshot — see [Visualizing .net files](#visualizing-net-files) |
 | `output/T_netroutingtable` | Full routing table contents per RouterNode |
 | `output/T_netstrucrep` | Structural metrics: diameter, distance histogram, routing table histograms |
 | `output/T_perfrep` | Performance counters: recall, drops, overhead |
-| `output/0_ontoout.net` | Semantic ontology graph (Pajek) |
+| `output/0_ontoout.net` | Semantic ontology graph (Pajek) — see [Visualizing .net files](#visualizing-net-files) |
 | `output/0_ontorep` | Ontology diameter and distance matrix |
+
+---
+
+## Visualizing .net files
+
+The simulator writes network topology snapshots (`T_netout.net`) and the
+semantic ontology graph (`0_ontoout.net`) in
+[Pajek format](http://mrvar.fdv.uni-lj.si/pajek/).  `net_viz.py` converts
+them to PNG images using [NetworkX](https://networkx.org/) and
+[Matplotlib](https://matplotlib.org/).
+
+### Quick start (Docker — no local Python setup needed)
+
+**Rebuild the image first** (adds `networkx` and `matplotlib`):
+```bash
+docker build -t srn .devcontainer/
+```
+
+**Render all `.net` files in `output/`:**
+```bash
+docker run --rm \
+  -v "$(pwd)":/workspace \
+  -w /workspace \
+  srn \
+  python net_viz.py output/ output/png/
+```
+
+PNGs land in `output/png/`, one per `.net` file.
+
+**Render results from a `run.sh` batch** (each config's own subdir):
+```bash
+for d in logs/*/; do
+  docker run --rm \
+    -v "$(pwd)":/workspace \
+    -w /workspace \
+    srn \
+    python net_viz.py "$d" "${d}png/"
+done
+```
+
+### What the script produces
+
+Each `.net` file → one PNG:
+
+| Input file | What it shows |
+|------------|---------------|
+| `0_ontoout.net` | The semantic ontology graph written at tick 0 (fixed for the whole run) |
+| `T_netout.net` | The overlay network topology at tick T — one snapshot per reporting period |
+
+Node size scales with degree (higher-degree nodes are drawn larger).
+Edges are drawn as arrows for directed (`*Arcs`) graphs.
+
+### Usage reference
+
+```
+python net_viz.py <input_dir> [output_dir]
+
+  input_dir   — directory containing *.net files
+  output_dir  — where to write PNGs (default: <input_dir>/png/)
+```

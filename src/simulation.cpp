@@ -67,7 +67,8 @@ int main(int argc, char *argv[])
 
 	unsigned int ontology_network_diameter;
 
-	char input_file_name[20];
+	//char input_file_name[20]; // too small for paths like logs/<name>/run.dat
+	char input_file_name[256];
 	unsigned int num_vertices;
 	//Create infrastructure
 	Infrastructure our_Infrastructure;
@@ -87,6 +88,10 @@ int main(int argc, char *argv[])
 
 	//Read all parameters from a file/ console
 	our_Infrastructure.IO_Reporter_ptr->read_input_parameter(input_file_name, &our_Infrastructure );
+
+	// Database was constructed before params were read; reinit re-allocates its
+	// param-dependent arrays with the actual (post-parse) values.
+	our_Infrastructure.database_ptr->reinit();
 
 	printf("\nThe input parameters read from file :%s are below \n", input_file_name);
 
@@ -127,10 +132,12 @@ int main(int argc, char *argv[])
 	
 		if (!our_Infrastructure.param_ptr->network_struct_report_required) {
 
-			memset(our_Infrastructure.analyst.list_of_edges, 0, our_Infrastructure.provisioned_capacity.edge_list * 4);
-			memset(our_Infrastructure.analyst.weight, 0, our_Infrastructure.provisioned_capacity.edge_list * 4);
+			//memset(our_Infrastructure.analyst.list_of_edges, 0, our_Infrastructure.provisioned_capacity.edge_list * 4); // BUG: hardcoded *4 wrong when sizeof(Edge)!=4 or sizeof(u_8)!=4
+			//memset(our_Infrastructure.analyst.weight, 0, our_Infrastructure.provisioned_capacity.edge_list * 4);       // BUG: u_8=unsigned char=1 byte, *4 overflows 3x
+			memset(our_Infrastructure.analyst.list_of_edges, 0, our_Infrastructure.provisioned_capacity.edge_list * sizeof(Edge));
+			memset(our_Infrastructure.analyst.weight,      0, our_Infrastructure.provisioned_capacity.edge_list * sizeof(u_8));
 
-		} 
+		}
 
 		//if (our_Infrastructure.param_ptr->network_struct_report_required)
 			our_Infrastructure.analyst.distance_histogram = new unsigned int [std::numeric_limits<short>::max()+1];
